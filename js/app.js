@@ -22,36 +22,35 @@ var animationCSS = function() {
 	var hasClass = function(element, className) {
 		if (element && className) {
 		    return element.className.match(new RegExp('(\\s|^)'+className+'(\\s|$)'));
+		} else {
+			return null;
 		}
 	};
 
 	var removeClass = function(element, className) {
-        if (hasClass(element, className)) {
-            element.className = element.className.replace(new RegExp('(\\s|^)'+className+'(\\s|$)'), '');
-        }
+        if (!hasClass(element, className)) return;
+        element.className = element.className.replace(new RegExp('(\\s|^)'+className+'(\\s|$)'), '');
     };
 
     var stop = function(element, originalName) {
-    	if (element) {
-    		element.className = originalName;
-    		// arguments.callee is the anonymous function that called stop()
-    		removeMultipleListeners(element, animationEnd_, arguments.callee);
-    	}
+    	if (!element) return;
+
+		element.className = originalName;
+		// arguments.callee is the anonymous function that called stop()
+		removeMultipleListeners(element, animationEnd_, arguments.callee);
     };
 
 	var start = function(element, originalClass, animationName, loop) {
-		if (!(element && animationName)) return;
-
 		var prefix = 'animated ' + ((loop) ? 'infinite ' : '');
 		var animatedClass = prefix + animationName;
 
-		if (!hasClass(element, animatedClass)) {
-			element.className += ' ' + animatedClass;
-			if (!loop) {
-				addMultipleListeners(element, animationEnd_, function() {
-					stop(element, originalClass);
-				});
-			}
+		if (!(element && animationName) || hasClass(element, animatedClass)) return;
+
+		element.className += ' ' + animatedClass;
+		if (!loop) {
+			addMultipleListeners(element, animationEnd_, function() {
+				stop(element, originalClass);
+			});
 		}
 	}
 
@@ -70,19 +69,19 @@ var musicPlayer = function() {
 	}
 
 	return {
-		play: function(filename, loop) {
-			if (!filename) return;
+		play: function(id, loop) {
+			if (!id) return;
 
-			audio_ = new Audio(filename);
+			audio_ = document.getElementById(id);
 			audio_.play();
 			(loop) ? audio_.addEventListener('ended', repeat) : null;
 		},
 		stop: function() {
-			if (audio_) {
-				audio_.removeEventListener('ended', repeat);
-				audio_.currentTime = 0;
-				audio_.pause();
-			}
+			if (!audio_) return;
+
+			audio_.removeEventListener('ended', repeat);
+			audio_.currentTime = 0;
+			audio_.pause();
 		}
 	}
 }
@@ -169,8 +168,9 @@ var app = function() {
 		secondsDisplay_.value = seconds;
 	};
 
-	// Decrement the duration_ by 1 second by default, but will decrease by
-	// timeElapsed if timeElapsed is longer than 1 second
+	// Automatically decrease the duration by 1 second, but if the tab is inactive,
+	// which means that the real time elapsed is larger than 1 second, we will decrease
+	// that amount instead to make up for the delayed time.
 	var tick = function(secondsElapsed) {
 		if (!duration_) return;
 
@@ -180,36 +180,34 @@ var app = function() {
 			updateDisplay(duration_.hours(), duration_.minutes(), duration_.seconds());
 		} else {
 			stop();
-			soundPlayer_.play('alert.mp3', true);
+			soundPlayer_.play('alert', true);
 			animation_.start(timerDisplay_, timerClassName_, 'pulse', true);
-			console.log(timerDisplay_.className);
 		}
 	};
 
 	var start = function() {
-		if (state_ !== PLAYING) {
-			if (validate()) {
-				state_      = PLAYING;
-				duration_   = moment.duration(getTime());
+		if (state_ === PLAYING) return;
 
-				var before = moment(), after  = null; // check-points for computing elapsed time
+		if (validate()) {
+			state_      = PLAYING;
+			duration_   = moment.duration(getTime());
 
-				intervalID_ = window.setInterval(function() {
-					after = moment();
-					tick(Math.round(after.diff(before) / 1000)); // real-time seconds elapsed
-					before = after;
-				}, 1000);
-			} else {
-				animation_.start(timerDisplay_, timerClassName_, 'shake', false);
-			}
+			var before = moment(), after  = null; // check-points for computing elapsed time
+			intervalID_ = window.setInterval(function() {
+				after = moment();
+				tick(Math.round(after.diff(before) / 1000)); // real-time seconds elapsed
+				before = after;
+			}, 1000);
+		} else {
+			animation_.start(timerDisplay_, timerClassName_, 'shake', false);
 		}
 	};
 
 	var pause = function() {
-		if (state_ !== STOPPED) {
-			state_ = PAUSED;
-			window.clearInterval(intervalID_);
-		}
+		if (state_ === STOPPED) return;
+
+		state_ = PAUSED;
+		window.clearInterval(intervalID_);
 	};
 
 	var stop = function() {
