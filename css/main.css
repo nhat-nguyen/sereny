@@ -1,0 +1,140 @@
+body {
+    /*background-color: #273339;*/
+    background: url("../assets/background.jpg") no-repeat center center fixed;
+    background-size: 100%;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+html, body {
+	font-family: "Helvetica", "Arial", sans-serif;
+	font-size: 14px;
+	font-weight: 400;
+	line-height: 20px;
+}
+
+.main {
+	position: relative;
+}
+
+.timer {
+	width:210px;
+	height:115px;
+	background-color: #00416b;
+	opacity: 66%;
+
+	border-top: solid 6px #bfdbe8;
+
+	/*border-top: 6px blue;*/
+
+	/* Centering vertically and horizontally */
+	position:fixed;
+	left: 50%;
+	margin-left:-108px;
+	bottom: 50%;
+	margin-bottom:-57.5px;
+
+	/* Fancy hovering stuff */
+	transition: box-shadow .25s ease-in-out;
+	-moz-transition: box-shadow .25s ease-in-out;
+	-webkit-transition: box-shadow .25s ease-in-out;
+
+	/* Shadow */
+	-webkit-box-shadow: 10px 10px 50px 0px rgba(1, 46, 85, 0.5);
+	-moz-box-shadow: 10px 10px 50px 0px rgba(1, 46, 85, 0.5);
+	box-shadow: 10px 10px 50px 0px rgba(1, 46, 85, 0.5);
+}
+
+.timer:hover {
+	-webkit-box-shadow: 10px 10px 50px 0px rgba(1, 46, 85, 0.75);
+	-moz-box-shadow: 10px 10px 50px 0px rgba(1, 46, 85, 0.75);
+	box-shadow: 10px 10px 50px 0px rgba(1, 46, 85, 0.75);
+}
+
+.hours, .minutes, .seconds {
+	float: left;
+}
+
+.hours input {
+	background-color: #45779d;
+}
+
+.minutes input {
+	background-color: #24678f;
+}
+
+.seconds input {
+	background-color: #00567f;
+}
+
+.timer input {
+	box-sizing: border-box; /* make the input's size display accurately on Mac*/
+	width: 70px;
+	height: 70px;
+	float: left;
+	border: none;
+}
+
+.label {
+	position: absolute;
+	top: 28px;
+	margin-left: -20px;
+	width: 5px;
+	color: white;
+}
+
+input {
+	font-size: 150%;
+	text-align: center;
+	color: white;
+}
+
+*:focus {
+    outline: 0;
+}
+
+.controls {
+	/* Place the start button a little further from the timer*/
+	position: absolute;
+	top: 70px;
+
+	/* Make the button center horizontally */
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	left: 0;
+	right: 0;
+
+	height: 45px;
+	width: 210px;
+}
+
+.stop, .start, .pause {
+	position: relative;
+	color: #e2e2e2;
+	cursor: pointer;
+	transition: color .25s ease-in-out;
+	-moz-transition: color .25s ease-in-out;
+	-webkit-transition: color .25s ease-in-out;
+}
+
+.stop {
+	margin-right: 10px;
+	top: 3px;
+}
+
+.start {
+	position: relative;
+	top: 8px;
+}
+
+.pause {
+	margin-left: 10px;
+	top: 3px;
+}
+
+.stop:hover, .start:hover, .pause:hover {
+	color: white;
+}
